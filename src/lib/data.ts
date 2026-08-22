@@ -88,8 +88,8 @@ const menuFor = (base: string, images: string[]): Dish[] =>
     name: m.n,
     desc: m.d,
     price: m.p,
-    tag: m.t,
-    image: images[i % images.length],
+    ...(m.t ? { tag: m.t } : {}),
+    image: images[i % images.length]!,
   }));
 
 const img = {
