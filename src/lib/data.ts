@@ -26,7 +26,15 @@ export type Restaurant = {
   menu: Dish[];
 };
 
-export const cravings = [
+export type Craving = {
+  id: string;
+  emoji: string;
+  name: string;
+  tagline: string;
+  image: string;
+};
+
+export const cravings: Craving[] = [
   {
     id: "midnight-munchies",
     emoji: "🍔",

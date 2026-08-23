@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Clock, Sparkles, Star } from "lucide-react";
+import { Clock, Moon, Star } from "lucide-react";
 import type { Restaurant } from "@/lib/data";
 
 export function RestaurantCard({
@@ -21,16 +21,16 @@ export function RestaurantCard({
       style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <img
-          src={r.hero}
-          alt={r.name}
-          loading="lazy"
-          className="size-full object-cover brightness-[0.62] transition-transform duration-700 group-hover:scale-105 group-hover:brightness-75"
-        />
+          <img
+            src={r.hero}
+            alt={r.name}
+            loading="lazy"
+            className="size-full object-cover brightness-[0.62] transition-transform duration-700 group-hover:scale-105 group-hover:brightness-75 float-anim"
+          />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
         {r.owlsPick && (
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-foreground">
-            <Sparkles className="size-3" /> Owl&apos;s pick
+            <Moon className="size-3" /> Owl&apos;s pick
           </span>
         )}
         <span className="absolute right-3 top-3 rounded-full bg-background/85 px-2.5 py-1 text-[11px] font-medium backdrop-blur">

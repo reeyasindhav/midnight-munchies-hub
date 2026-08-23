@@ -10,7 +10,7 @@ import {
 import { restaurants, type Dish } from "./data";
 
 export type CartLine = { dishId: string; name: string; price: number; qty: number; restaurantId: string };
-export type User = { name: string; email: string };
+export type User = { name: string; email: string; role: "customer" | "restaurant" };
 export type Order = {
   id: string;
   restaurantId: string;
@@ -22,10 +22,24 @@ export type Order = {
   status: "cooking" | "on-the-way" | "delivered";
 };
 
+export type RestaurantProfile = {
+  id: string;
+  name: string;
+  cuisine: string;
+  description: string;
+  hero: string;
+  deliveryFee: number;
+  price: "$" | "$$" | "$$$";
+  openUntilHour: number;
+  closesAt: string;
+  neighborhood: string;
+  menu: Dish[];
+};
+
 type Store = {
   hydrated: boolean;
   user: User | null;
-  signIn: (name: string, email: string) => void;
+  signIn: (name: string, email: string, role: "customer" | "restaurant") => void;
   signOut: () => void;
   cart: CartLine[];
   cartRestaurantId: string | null;
@@ -36,6 +50,12 @@ type Store = {
   cartCount: number;
   orders: Order[];
   placeOrder: () => Order | null;
+  updateOrderStatus: (orderId: string, status: Order["status"]) => void;
+  restaurantProfile: RestaurantProfile | null;
+  registerRestaurant: (profile: RestaurantProfile) => void;
+  updateRestaurant: (updates: Partial<RestaurantProfile>) => void;
+  addMenuItem: (dish: Dish) => void;
+  removeMenuItem: (dishId: string) => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -80,6 +100,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [cartRestaurantId, setCartRestaurantId] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>(seedOrders);
+  const [restaurantProfile, setRestaurantProfile] = useState<RestaurantProfile | null>(null);
 
   useEffect(() => {
     try {
@@ -90,6 +111,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setCart(s.cart ?? []);
         setCartRestaurantId(s.cartRestaurantId ?? null);
         setOrders(s.orders?.length ? s.orders : seedOrders);
+        setRestaurantProfile(s.restaurantProfile ?? null);
       }
     } catch {
       /* ignore */
@@ -99,8 +121,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(KEY, JSON.stringify({ user, cart, cartRestaurantId, orders }));
-  }, [hydrated, user, cart, cartRestaurantId, orders]);
+    localStorage.setItem(KEY, JSON.stringify({ user, cart, cartRestaurantId, orders, restaurantProfile }));
+  }, [hydrated, user, cart, cartRestaurantId, orders, restaurantProfile]);
 
   const addToCart = useCallback(
     (restaurantId: string, dish: Dish) => {
@@ -130,6 +152,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const cartTotal = useMemo(() => cart.reduce((s, l) => s + l.price * l.qty, 0), [cart]);
   const cartCount = useMemo(() => cart.reduce((s, l) => s + l.qty, 0), [cart]);
 
+  const updateOrderStatus = useCallback((orderId: string, status: Order["status"]) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
+    );
+  }, []);
+
+  const registerRestaurant = useCallback((profile: RestaurantProfile) => {
+    setRestaurantProfile(profile);
+  }, []);
+
+  const updateRestaurant = useCallback((updates: Partial<RestaurantProfile>) => {
+    setRestaurantProfile((prev) => (prev ? { ...prev, ...updates } : null));
+  }, []);
+
+  const addMenuItem = useCallback((dish: Dish) => {
+    setRestaurantProfile((prev) => {
+      if (!prev) return prev;
+      return { ...prev, menu: [...prev.menu, dish] };
+    });
+  }, []);
+
+  const removeMenuItem = useCallback((dishId: string) => {
+    setRestaurantProfile((prev) => {
+      if (!prev) return prev;
+      return { ...prev, menu: prev.menu.filter((d) => d.id !== dishId) };
+    });
+  }, []);
+
   const placeOrder = useCallback(() => {
     if (!cart.length || !cartRestaurantId) return null;
     const r = restaurants.find((x) => x.id === cartRestaurantId);
@@ -149,11 +199,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return order;
   }, [cart, cartRestaurantId, cartTotal]);
 
+  const signIn = useCallback((name: string, email: string, role: "customer" | "restaurant" = "customer") => {
+    setUser({ name, email, role });
+  }, []);
+
+  const signOut = useCallback(() => {
+    setUser(null);
+  }, []);
+
   const value: Store = {
     hydrated,
     user,
-    signIn: (name, email) => setUser({ name, email }),
-    signOut: () => setUser(null),
+    signIn,
+    signOut,
     cart,
     cartRestaurantId,
     addToCart,
@@ -163,6 +221,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     cartCount,
     orders,
     placeOrder,
+    updateOrderStatus,
+    restaurantProfile,
+    registerRestaurant,
+    updateRestaurant,
+    addMenuItem,
+    removeMenuItem,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

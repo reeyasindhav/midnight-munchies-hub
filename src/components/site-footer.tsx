@@ -26,11 +26,10 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <p className="eyebrow">Explore</p>
+          <p className="eyebrow">Legal</p>
           <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/discover" className="hover:text-foreground">Discover</Link></li>
-            <li><Link to="/cravings" className="hover:text-foreground">Cravings</Link></li>
-            <li><Link to="/how-it-works" className="hover:text-foreground">How it works</Link></li>
+            <li><Link to="/privacy" className="hover:text-foreground">Privacy</Link></li>
+            <li><Link to="/terms" className="hover:text-foreground">Terms</Link></li>
           </ul>
         </div>
         <div>

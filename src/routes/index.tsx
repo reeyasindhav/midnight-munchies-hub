@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Clock, MapPin, Sparkles, Zap } from "lucide-react";
+import { ArrowUpRight, Clock, MapPin, Moon, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cravings, restaurants } from "@/lib/data";
 import { formatClock, isOpenAt, nightHour } from "@/lib/night";
 import { RestaurantCard } from "@/components/restaurant-card";
+import { AnimatedHeading } from "@/components/animated-heading";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,11 +47,11 @@ function Home() {
           <p className="eyebrow flex items-center gap-2">
             <span className="live-dot" /> Open late. Eat well.
           </p>
-          <h1 className="mt-6 text-6xl leading-[0.9] sm:text-7xl lg:text-8xl">
+          <AnimatedHeading className="mt-6 text-6xl leading-[0.9] sm:text-7xl lg:text-8xl">
             GOOD FOOD
             <br />
             <span className="text-primary">AFTER DARK.</span>
-          </h1>
+          </AnimatedHeading>
           <p className="mt-8 max-w-md text-muted-foreground">
             The best kitchens still cooking when the rest of the city is asleep. Curated for right
             now.
@@ -77,7 +78,7 @@ function Home() {
             <img
               src={featured[0]?.hero}
               alt={featured[0]?.name ?? "Late night dish"}
-              className="size-48 rounded-full object-cover brightness-90"
+              className="size-48 rounded-full object-cover brightness-90 float-anim"
               style={{ boxShadow: "0 0 90px -20px var(--neon)" }}
             />
             <p className="eyebrow mt-8">Crispy · Saucy · Late</p>
@@ -90,7 +91,7 @@ function Home() {
                 to="/cravings"
                 className="grid size-12 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-transform hover:rotate-12"
               >
-                <Sparkles className="size-5" />
+                <Moon className="size-5" />
               </Link>
             </div>
           </div>
@@ -158,7 +159,7 @@ function Home() {
           {[
             { k: "412", l: "kitchens open past 2 AM", i: Clock },
             { k: "21 min", l: "median late-night delivery", i: Zap },
-            { k: "0", l: "closed venues in your feed", i: Sparkles },
+            { k: "0", l: "closed venues in your feed", i: Moon },
           ].map((s, i) => (
             <div key={s.l} className="card-night animate-rise rounded-2xl p-7" style={{ animationDelay: `${i * 80}ms` }}>
               <s.i className="size-5 text-primary" />
