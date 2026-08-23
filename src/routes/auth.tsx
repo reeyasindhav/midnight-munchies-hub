@@ -243,7 +243,11 @@ function AuthPage() {
           </Tabs>
 
           <div className="mt-6 text-center text-xs text-muted-foreground">
-            By continuing you agree to our Terms of Service.
+            By continuing you agree to our{" "}
+            <Link to="/terms" className="text-primary underline underline-offset-4">
+              Terms of Service
+            </Link>
+            .
           </div>
         </div>
       </div>
